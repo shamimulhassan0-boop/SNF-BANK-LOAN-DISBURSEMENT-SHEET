@@ -5,7 +5,7 @@ import { LoanEntryForm } from './components/LoanEntryForm';
 import { ReportTable } from './components/ReportTable';
 import { EditModal } from './components/EditModal';
 import { ReportHeader, LoanEntry } from './types';
-import { FileText, LayoutDashboard, Sparkles, ShieldCheck, FileDown, Loader2, Table, Cloud, Check, Trash2, HelpCircle, Share2, Info, ExternalLink } from 'lucide-react';
+import { FileText, LayoutDashboard, Sparkles, ShieldCheck, FileDown, Loader2, Table, Cloud, Check, Trash2, HelpCircle, Share2, Info, ExternalLink, Github, Globe, MousePointer2, ChevronRight, ArrowUpRight } from 'lucide-react';
 import { summarizeReport, validateEntries } from './services/geminiService';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import jsPDF from 'jspdf';
@@ -13,7 +13,6 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 
 const App: React.FC = () => {
-  // Load data from localStorage
   const [header, setHeader] = useState<ReportHeader>(() => {
     const savedHeader = localStorage.getItem('mfi_report_header');
     return savedHeader ? JSON.parse(savedHeader) : {
@@ -249,49 +248,67 @@ const App: React.FC = () => {
       {/* Share Guide Modal */}
       {showShareGuide && (
         <div className="fixed inset-0 z-[110] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 pdf-exclude overflow-y-auto">
-          <div className="bg-white max-w-2xl w-full rounded-2xl shadow-2xl p-8 relative">
-             <button onClick={() => setShowShareGuide(false)} className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">✕</button>
+          <div className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl p-8 relative animate-in zoom-in duration-300">
+             <button onClick={() => setShowShareGuide(false)} className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">✕</button>
+             
              <div className="text-center mb-8">
-                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Share2 className="text-blue-600" size={32} />
+                <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Share2 className="text-blue-600" size={40} />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-800">কিভাবে এটি সবার সাথে শেয়ার করবেন?</h2>
-                <p className="text-slate-500 mt-2">আপনার তৈরি করা এই ডিজিটাল পরিদর্শন সিস্টেমটি ব্যবহার করা খুবই সহজ।</p>
+                <h2 className="text-3xl font-bold text-slate-800">GitHub-এ পাবলিশ করার গাইড</h2>
+                <p className="text-slate-500 mt-2">আপনি যে বাটনটি মার্ক করেছেন সেটি ব্যবহার করেই আপনি "সিঙ্ক" করতে পারবেন।</p>
              </div>
 
-             <div className="space-y-6 text-slate-600">
-                <div className="flex gap-4">
-                  <div className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">১</div>
-                  <div>
-                    <h3 className="font-bold text-slate-800">হোস্টিং (Hosting)</h3>
-                    <p className="text-sm mt-1">এই অ্যাপটিকে একটি লিঙ্কে রূপান্তর করতে আপনি GitHub Pages বা Netlify ব্যবহার করতে পারেন। এর ফলে সবাই একটি লিঙ্কের মাধ্যমেই আপনার অ্যাপে ঢুকতে পারবে।</p>
-                  </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Step 1: Editor Sync */}
+                <div className="space-y-4">
+                   <div className="flex items-center gap-3 bg-slate-900 text-white p-3 rounded-2xl">
+                      <div className="bg-white text-slate-900 w-8 h-8 rounded-full flex items-center justify-center font-bold">১</div>
+                      <h3 className="font-bold flex items-center gap-2"><Github size={18}/> এডিটরের "Export" ব্যবহার</h3>
+                   </div>
+                   <div className="border border-slate-200 rounded-2xl p-5 space-y-3 text-sm">
+                      <p className="flex items-start gap-2">
+                         <MousePointer2 size={16} className="text-blue-500 flex-shrink-0 mt-0.5" /> 
+                         <span>উপরে টুলবার থেকে <b>GitHub Icon</b> (যেটি আপনি মার্ক করেছেন) এ ক্লিক করুন।</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                         <MousePointer2 size={16} className="text-blue-500 flex-shrink-0 mt-0.5" /> 
+                         <span>আপনার GitHub অ্যাকাউন্ট কানেক্ট করুন এবং একটি নতুন <b>Repository</b> নাম দিন।</span>
+                      </p>
+                      <p className="flex items-start gap-2">
+                         <ArrowUpRight size={16} className="text-blue-500 flex-shrink-0 mt-0.5" /> 
+                         <span>এর ফলে আপনার কোডগুলো সরাসরি GitHub-এ চলে যাবে।</span>
+                      </p>
+                   </div>
                 </div>
 
-                <div className="flex gap-4">
-                  <div className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">২</div>
-                  <div>
-                    <h3 className="font-bold text-slate-800">গুগল শিট এক্সেস</h3>
-                    <p className="text-sm mt-1">সবাই যখন তথ্য ইনপুট দিবে, তা আপনার শিটে আসার জন্য আপনার গুগল অ্যাপস স্ক্রিপ্টটি অবশ্যই 'Anyone' এক্সেস সহ পাবলিশ করতে হবে।</p>
-                  </div>
+                {/* Step 2: Enable Pages */}
+                <div className="space-y-4">
+                   <div className="flex items-center gap-3 bg-emerald-600 text-white p-3 rounded-2xl">
+                      <div className="bg-white text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">২</div>
+                      <h3 className="font-bold">GitHub Pages থেকে লাইভ</h3>
+                   </div>
+                   <div className="border border-emerald-100 rounded-2xl p-5 space-y-3 text-sm">
+                      <p className="flex items-center gap-2"><ChevronRight size={14} className="text-emerald-500" /> GitHub-এ আপনার তৈরি হওয়া রিপোজিটরির <b>Settings</b>-এ যান।</p>
+                      <p className="flex items-center gap-2"><ChevronRight size={14} className="text-emerald-500" /> বাম পাশের মেনু থেকে <b>Pages</b>-এ ক্লিক করুন।</p>
+                      <p className="flex items-center gap-2"><ChevronRight size={14} className="text-emerald-500" /> Branch অপশনে <b>'main'</b> সিলেক্ট করে <b>Save</b> দিন।</p>
+                      <p className="font-bold text-emerald-600 mt-2">ব্যাস! এখন একটি লিঙ্ক পাবেন যা সবাইকে শেয়ার করা যাবে।</p>
+                   </div>
                 </div>
+             </div>
 
-                <div className="flex gap-4">
-                  <div className="bg-blue-50 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold">৩</div>
-                  <div>
-                    <h3 className="font-bold text-slate-800">ডিভাইস ডাটা নিরাপত্তা</h3>
-                    <p className="text-sm mt-1">প্রত্যেক ব্যবহারকারীর ইনপুট করা ডাটা তার নিজের ফোনে বা কম্পিউটারেই জমা থাকে (Local Storage)। যতক্ষণ না তিনি "গুগল শিটে সেভ" করছেন, আপনার মূল ডাটাবেজে তা আসবে না। এটি ডাটা ডুপ্লিকেট হওয়া রোধ করে।</p>
-                  </div>
-                </div>
-
-                <div className="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-3">
-                   <Info className="text-amber-600 flex-shrink-0" size={20} />
-                   <p className="text-xs text-amber-800 italic leading-relaxed">টিপস: আপনি একটি কিউআর কোড (QR Code) তৈরি করে সবাইকে দিতে পারেন, যাতে তারা মোবাইলে স্ক্যান করে সরাসরি এই পরিদর্শনে অংশ নিতে পারে।</p>
+             <div className="mt-8 bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4 items-start">
+                <Info className="text-amber-600 flex-shrink-0" size={24} />
+                <div>
+                   <h4 className="font-bold text-amber-800 text-sm">পার্থক্যটি বুঝে নিন:</h4>
+                   <p className="text-xs text-amber-700 leading-relaxed mt-1">
+                      উপরের GitHub বাটনটি হলো <b>কোড পাবলিশ</b> করার জন্য। আর অ্যাপের ভেতরের <b>"শিটে সেভ"</b> বাটনটি হলো পরিদর্শনের <b>ডাটা সেভ</b> করার জন্য। দুইটা আলাদা কাজ।
+                   </p>
                 </div>
              </div>
 
              <div className="mt-8 flex justify-center">
-                <button onClick={() => setShowShareGuide(false)} className="bg-slate-900 text-white px-10 py-3 rounded-xl font-bold hover:bg-black transition-all shadow-lg">ঠিক আছে, বুঝেছি</button>
+                <button onClick={() => setShowShareGuide(false)} className="bg-slate-900 text-white px-12 py-3 rounded-2xl font-bold hover:bg-black transition-all shadow-xl">ঠিক আছে, সিঙ্ক করছি</button>
              </div>
           </div>
         </div>
