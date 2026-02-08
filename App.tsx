@@ -5,7 +5,7 @@ import { LoanEntryForm } from './components/LoanEntryForm';
 import { ReportTable } from './components/ReportTable';
 import { EditModal } from './components/EditModal';
 import { ReportHeader, LoanEntry } from './types';
-import { FileText, LayoutDashboard, Sparkles, ShieldCheck, FileDown, Loader2, Table, Cloud, Check, Trash2, HelpCircle, Share2, Info, ExternalLink, Github, Globe, MousePointer2, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { FileText, LayoutDashboard, Sparkles, ShieldCheck, FileDown, Loader2, Table, Cloud, Check, Trash2, HelpCircle, Share2, Info, ExternalLink, Github, Globe, MousePointer2, ChevronRight, ArrowUpRight, AlertTriangle, Eye, Lock, Copy, MailCheck, MousePointerClick } from 'lucide-react';
 import { summarizeReport, validateEntries } from './services/geminiService';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import jsPDF from 'jspdf';
@@ -206,6 +206,13 @@ const App: React.FC = () => {
 
   const unsyncedCount = entries.filter(e => !e.isSynced).length;
 
+  const repoPath = "shamimulhassan0-boop/SNF-BANK-LOAN-DISBURSEMENT-SHEET";
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(repoPath);
+    alert("নামটি কপি করা হয়েছে।");
+  };
+
   return (
     <div className="min-h-screen pb-20 bg-slate-50 font-['Hind_Siliguri']">
       <nav className="bg-emerald-800 text-white shadow-lg sticky top-0 z-50 px-4 py-3 pdf-exclude">
@@ -248,67 +255,40 @@ const App: React.FC = () => {
       {/* Share Guide Modal */}
       {showShareGuide && (
         <div className="fixed inset-0 z-[110] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 pdf-exclude overflow-y-auto">
-          <div className="bg-white max-w-4xl w-full rounded-3xl shadow-2xl p-8 relative animate-in zoom-in duration-300">
+          <div className="bg-white max-w-5xl w-full rounded-3xl shadow-2xl p-8 relative animate-in zoom-in duration-300">
              <button onClick={() => setShowShareGuide(false)} className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full text-slate-400 transition-colors">✕</button>
              
              <div className="text-center mb-8">
-                <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Share2 className="text-blue-600" size={40} />
+                <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="text-emerald-600" size={40} />
                 </div>
-                <h2 className="text-3xl font-bold text-slate-800">GitHub-এ পাবলিশ করার গাইড</h2>
-                <p className="text-slate-500 mt-2">আপনি যে বাটনটি মার্ক করেছেন সেটি ব্যবহার করেই আপনি "সিঙ্ক" করতে পারবেন।</p>
+                <h2 className="text-3xl font-bold text-slate-800">অভিনন্দন! আপনার অ্যাপটি এখন লাইভ।</h2>
+                <p className="text-slate-500 mt-2">ব্যবহার শুরু করার জন্য নিচের চেকলিস্টটি দেখুন।</p>
              </div>
 
              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Step 1: Editor Sync */}
-                <div className="space-y-4">
-                   <div className="flex items-center gap-3 bg-slate-900 text-white p-3 rounded-2xl">
-                      <div className="bg-white text-slate-900 w-8 h-8 rounded-full flex items-center justify-center font-bold">১</div>
-                      <h3 className="font-bold flex items-center gap-2"><Github size={18}/> এডিটরের "Export" ব্যবহার</h3>
-                   </div>
-                   <div className="border border-slate-200 rounded-2xl p-5 space-y-3 text-sm">
-                      <p className="flex items-start gap-2">
-                         <MousePointer2 size={16} className="text-blue-500 flex-shrink-0 mt-0.5" /> 
-                         <span>উপরে টুলবার থেকে <b>GitHub Icon</b> (যেটি আপনি মার্ক করেছেন) এ ক্লিক করুন।</span>
-                      </p>
-                      <p className="flex items-start gap-2">
-                         <MousePointer2 size={16} className="text-blue-500 flex-shrink-0 mt-0.5" /> 
-                         <span>আপনার GitHub অ্যাকাউন্ট কানেক্ট করুন এবং একটি নতুন <b>Repository</b> নাম দিন।</span>
-                      </p>
-                      <p className="flex items-start gap-2">
-                         <ArrowUpRight size={16} className="text-blue-500 flex-shrink-0 mt-0.5" /> 
-                         <span>এর ফলে আপনার কোডগুলো সরাসরি GitHub-এ চলে যাবে।</span>
-                      </p>
+                <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-6 shadow-sm">
+                   <h3 className="font-bold text-emerald-800 mb-6 flex items-center gap-2"><ArrowUpRight size={20}/> ব্যবহার শুরুর চেকলিস্ট</h3>
+                   <div className="space-y-4">
+                      <p className="text-[11px] text-emerald-900 leading-relaxed font-semibold flex items-center gap-2"><Check size={14} className="text-emerald-600" /> ১. **Visit Site** বাটনে ক্লিক করে লিঙ্কটি ওপেন করুন।</p>
+                      <p className="text-[11px] text-emerald-900 leading-relaxed font-semibold flex items-center gap-2"><Check size={14} className="text-emerald-600" /> ২. অ্যাপের ওপরের **"ক্লাউড সেটিংস"** এ যান।</p>
+                      <p className="text-[11px] text-emerald-900 leading-relaxed font-semibold flex items-center gap-2"><Check size={14} className="text-emerald-600" /> ৩. আপনার **Google Apps Script URL** টি পেস্ট করুন।</p>
+                      <p className="text-[11px] text-emerald-900 leading-relaxed font-semibold flex items-center gap-2"><Check size={14} className="text-emerald-600" /> ৪. একটি টেস্ট ডাটা এন্ট্রি দিয়ে চেক করুন শিটে সেভ হচ্ছে কি না।</p>
                    </div>
                 </div>
 
-                {/* Step 2: Enable Pages */}
-                <div className="space-y-4">
-                   <div className="flex items-center gap-3 bg-emerald-600 text-white p-3 rounded-2xl">
-                      <div className="bg-white text-emerald-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">২</div>
-                      <h3 className="font-bold">GitHub Pages থেকে লাইভ</h3>
+                <div className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-6 shadow-sm">
+                   <h3 className="font-bold text-blue-800 mb-6 flex items-center gap-2"><HelpCircle size={20}/> সমস্যা হলে কি করবেন?</h3>
+                   <div className="space-y-4">
+                      <p className="text-[11px] text-blue-900 leading-relaxed font-semibold">১. যদি লিঙ্কটি **404** দেখায়, তবে ২-৩ মিনিট পর আবার রিফ্রেশ করুন।</p>
+                      <p className="text-[11px] text-blue-900 leading-relaxed font-semibold">২. যদি "Custom Domain" এরর দেখায়, তবে বক্সটি আবার খালি করে সেভ করুন।</p>
+                      <p className="text-[11px] text-blue-900 leading-relaxed font-semibold">৩. লিঙ্কটি ব্রাউজারে **বুকমার্ক** করে রাখুন যাতে পরে সহজে খুঁজে পান।</p>
                    </div>
-                   <div className="border border-emerald-100 rounded-2xl p-5 space-y-3 text-sm">
-                      <p className="flex items-center gap-2"><ChevronRight size={14} className="text-emerald-500" /> GitHub-এ আপনার তৈরি হওয়া রিপোজিটরির <b>Settings</b>-এ যান।</p>
-                      <p className="flex items-center gap-2"><ChevronRight size={14} className="text-emerald-500" /> বাম পাশের মেনু থেকে <b>Pages</b>-এ ক্লিক করুন।</p>
-                      <p className="flex items-center gap-2"><ChevronRight size={14} className="text-emerald-500" /> Branch অপশনে <b>'main'</b> সিলেক্ট করে <b>Save</b> দিন।</p>
-                      <p className="font-bold text-emerald-600 mt-2">ব্যাস! এখন একটি লিঙ্ক পাবেন যা সবাইকে শেয়ার করা যাবে।</p>
-                   </div>
-                </div>
-             </div>
-
-             <div className="mt-8 bg-amber-50 p-5 rounded-2xl border border-amber-100 flex gap-4 items-start">
-                <Info className="text-amber-600 flex-shrink-0" size={24} />
-                <div>
-                   <h4 className="font-bold text-amber-800 text-sm">পার্থক্যটি বুঝে নিন:</h4>
-                   <p className="text-xs text-amber-700 leading-relaxed mt-1">
-                      উপরের GitHub বাটনটি হলো <b>কোড পাবলিশ</b> করার জন্য। আর অ্যাপের ভেতরের <b>"শিটে সেভ"</b> বাটনটি হলো পরিদর্শনের <b>ডাটা সেভ</b> করার জন্য। দুইটা আলাদা কাজ।
-                   </p>
                 </div>
              </div>
 
              <div className="mt-8 flex justify-center">
-                <button onClick={() => setShowShareGuide(false)} className="bg-slate-900 text-white px-12 py-3 rounded-2xl font-bold hover:bg-black transition-all shadow-xl">ঠিক আছে, সিঙ্ক করছি</button>
+                <button onClick={() => setShowShareGuide(false)} className="bg-slate-900 text-white px-12 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-xl text-lg transform hover:scale-105 active:scale-95">এখনই কাজ শুরু করছি</button>
              </div>
           </div>
         </div>

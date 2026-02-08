@@ -17,6 +17,14 @@
                 display: none !important;
             }
         }
+        #app-loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #065f46;
+        }
     </style>
 <script type="importmap">
 {
@@ -35,6 +43,15 @@
 </script>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="root">
+        <div id="app-loader">
+            <div style="width: 40px; height: 40px; border: 4px solid #065f46; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="margin-top: 15px; font-weight: bold; font-family: 'Hind Siliguri', sans-serif;">পোর্টাল লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+        </div>
+    </div>
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+    <script type="module" src="./index.tsx"></script>
 </body>
 </html>
