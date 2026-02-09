@@ -1,5 +1,5 @@
 {
-  "name": "এমএফআই এর মাধ্যমে বিতরণকৃত ঋণ সরেজমিনে পরিদর্শন প্রতিবেদন",
+  "name": "SNF BANK LOAN DISBURSEMENT LIST",
   "description": "এমএফআই পরিদর্শন প্রতিবেদন ম্যানেজমেন্ট সিস্টেম।",
   "requestFramePermissions": [
     "camera"
