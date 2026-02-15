@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ReportHeader } from '../types';
-import { Settings, Link2, Building2, ChevronDown, Plus, Trash2, List, RotateCcw } from 'lucide-react';
+import { Settings, Link2, Building2, ChevronDown, Plus, Trash2, List, RotateCcw, MapPin } from 'lucide-react';
 
 interface HeaderFormProps {
   data: ReportHeader;
@@ -60,18 +60,20 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
     
     // add only if it doesn't already exist to avoid duplication
     if (!existingAreas.includes(val)) {
-      const updatedAreas = [...existingAreas, val].join(', ');
+      const updatedAreas = existingAreas.length > 0 
+        ? [...existingAreas, val].join(', ') 
+        : val;
       onChange('disbursementArea', updatedAreas);
     }
   };
 
   return (
-    <div className="bg-white p-10 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 mb-12 pdf-exclude relative transition-all">
+    <div className="bg-white p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 mb-12 pdf-exclude relative transition-all">
       <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
         <div className="flex items-center gap-4">
           <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg"><Building2 size={28} /></div>
           <div>
-            <h2 className="text-2xl font-black text-slate-800 tracking-tight">রিপোর্ট কনফিগারেশন</h2>
+            <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">রিপোর্ট কনফিগারেশন</h2>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">GENERAL SETTINGS & LISTS</p>
           </div>
         </div>
@@ -87,7 +89,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
       </div>
 
       {isAdmin && showSettings && (
-        <div className="mb-10 p-8 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-emerald-100 space-y-8 animate-in slide-in-from-top-4 duration-300">
+        <div className="mb-10 p-6 md:p-8 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-emerald-100 space-y-8 animate-in slide-in-from-top-4 duration-300">
            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-b border-emerald-100 pb-8">
               <div>
                 <label className="block text-[10px] font-black text-slate-400 uppercase mb-3 ml-1">Google Script Web App URL</label>
@@ -120,7 +122,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
                   <button 
                     key={tab} 
                     onClick={() => setActiveTab(tab)}
-                    className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-700 text-white shadow-lg' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'}`}
+                    className={`px-4 md:px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-700 text-white shadow-lg' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'}`}
                   >
                     {tab === 'bank' ? 'ব্যাংক' : tab === 'branch' ? 'শাখা' : tab === 'district' ? 'জেলা/এলাকা' : tab === 'upazila' ? 'উপজেলা' : 'ঋণের খাত'}
                   </button>
@@ -128,7 +130,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
               </div>
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                 <div className="flex gap-4 mb-6">
+                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
                     <input 
                       type="text" 
                       placeholder={`নতুন ${activeTab === 'bank' ? 'ব্যাংক' : activeTab === 'branch' ? 'শাখা' : activeTab === 'district' ? 'জেলা' : activeTab === 'upazila' ? 'উপজেলা' : 'ঋণের খাত'} এর নাম...`} 
@@ -137,7 +139,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
                       onChange={(e) => setNewItem(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
                     />
-                    <button onClick={handleAddItem} className="bg-emerald-600 text-white px-6 rounded-xl font-black flex items-center gap-2 hover:bg-emerald-700 transition-all">
+                    <button onClick={handleAddItem} className="bg-emerald-600 text-white px-6 py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all">
                       <Plus size={20} /> যোগ করুন
                     </button>
                  </div>
@@ -208,20 +210,25 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
               <button 
                 onClick={() => onChange('disbursementArea', '')}
                 className="p-4 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-100 transition-all border-2 border-rose-100 shadow-sm flex items-center justify-center"
-                title="মুছে ফেলুন"
+                title="সব মুছুন"
               >
                 <RotateCcw size={20} />
               </button>
             )}
           </div>
-          <input
-            disabled={!isAdmin}
-            type="text"
-            placeholder="বাছাইকৃত জেলাগুলো এখানে কমা দিয়ে বসবে..."
-            className="w-full p-4 border-b-2 border-slate-100 outline-none text-[13px] font-black text-emerald-800 bg-transparent focus:border-emerald-300 transition-all mt-1"
-            value={data.disbursementArea}
-            onChange={(e) => onChange('disbursementArea', e.target.value)}
-          />
+          <div className="relative mt-1">
+            <input
+              disabled={!isAdmin}
+              type="text"
+              placeholder="বাছাইকৃত জেলাগুলো এখানে কমা দিয়ে বসবে..."
+              className="w-full p-4 border-b-2 border-slate-100 outline-none text-[13px] font-black text-emerald-800 bg-transparent focus:border-emerald-300 transition-all"
+              value={data.disbursementArea}
+              onChange={(e) => onChange('disbursementArea', e.target.value)}
+            />
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-300">
+               <MapPin size={14} />
+            </div>
+          </div>
         </div>
 
         <div className="space-y-3">
