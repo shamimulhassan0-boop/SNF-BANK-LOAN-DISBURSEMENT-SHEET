@@ -8,8 +8,9 @@ export interface ReportHeader {
 
 export interface LoanEntry {
   id: string;
+  userId: string; // User's mobile number
   branchName: string;
-  borrowerInfo: string; // Name, Husband's Name, Village, Mobile
+  borrowerInfo: string; 
   upazila: string;
   district: string;
   loanSector: string;
@@ -24,7 +25,7 @@ export interface LoanEntry {
   passbookUpdated: boolean;
   collectionStartDate: string;
   inspectionComments: string;
-  isSynced?: boolean; // Track if already saved to cloud
+  isSynced?: boolean;
 }
 
 export interface InspectionReport {

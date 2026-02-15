@@ -1,5 +1,5 @@
 {
-  "name": "snf-bank-loan-disbursement-list",
+  "name": "ব্যাংক-ঋণ-পরিদর্শন-প্রতিবেদন",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,11 +11,11 @@
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "@google/genai": "^1.40.0",
-    "recharts": "^3.7.0",
-    "lucide-react": "^0.563.0",
-    "jspdf": "^2.5.1",
-    "html2canvas": "^1.4.1",
+    "@google/genai": "1.40.0",
+    "recharts": "3.7.0",
+    "lucide-react": "0.463.0",
+    "jspdf": "2.5.1",
+    "html2canvas": "1.4.1",
     "xlsx": "0.18.5"
   },
   "devDependencies": {

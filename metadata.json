@@ -1,7 +1,5 @@
 {
-  "name": "SNF BANK LOAN DISBURSEMENT LIST",
+  "name": "ব্যাংক ঋণ পরিদর্শন প্রতিবেদন",
   "description": "এমএফআই পরিদর্শন প্রতিবেদন ম্যানেজমেন্ট সিস্টেম।",
-  "requestFramePermissions": [
-    "camera"
-  ]
+  "requestFramePermissions": []
 }

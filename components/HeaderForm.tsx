@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ReportHeader } from '../types';
-import { Settings, Cloud, Link2 } from 'lucide-react';
+import { Settings, Link2, Building2, ChevronDown, Plus, Trash2, List, RotateCcw } from 'lucide-react';
 
 interface HeaderFormProps {
   data: ReportHeader;
@@ -10,143 +10,227 @@ interface HeaderFormProps {
   onUrlChange: (url: string) => void;
   autoSync: boolean;
   onSyncToggle: (val: boolean) => void;
+  isAdmin: boolean;
+  bankList: string[];
+  setBankList: (val: string[]) => void;
+  branchList: string[];
+  setBranchList: (val: string[]) => void;
+  districtList: string[];
+  setDistrictList: (val: string[]) => void;
+  upazilaList: string[];
+  setUpazilaList: (val: string[]) => void;
+  sectorList: string[];
+  setSectorList: (val: string[]) => void;
 }
 
 export const HeaderForm: React.FC<HeaderFormProps> = ({ 
-  data, 
-  onChange, 
-  googleSheetUrl, 
-  onUrlChange, 
-  autoSync, 
-  onSyncToggle 
+  data, onChange, googleSheetUrl, onUrlChange, autoSync, onSyncToggle, isAdmin,
+  bankList, setBankList, branchList, setBranchList, districtList, setDistrictList, upazilaList, setUpazilaList, sectorList, setSectorList
 }) => {
   const [showSettings, setShowSettings] = useState(false);
+  const [newItem, setNewItem] = useState("");
+  const [activeTab, setActiveTab] = useState<'bank' | 'branch' | 'district' | 'upazila' | 'sector'>('bank');
 
-  const commonBanks = [
-    "সোনালী ব্যাংক লিমিটেড", "জনতা ব্যাংক লিমিটেড", "অগ্রণী ব্যাংক লিমিটেড", "রূপালী ব্যাংক লিমিটেড", 
-    "বেসিক ব্যাংক লিমিটেড", "বাংলাদেশ ডেভেলপমেন্ট ব্যাংক", "বাংলাদেশ কৃষি ব্যাংক", "রাজশাহী কৃষি উন্নয়ন ব্যাংক", 
-    "আইএফআইসি ব্যাংক লিমিটেড", "ইউনাইটেড কমার্শিয়াল ব্যাংক (ইউসিবি)", "এবি ব্যাংক লিমিটেড", 
-    "ইসলামী ব্যাংক বাংলাদেশ লিমিটেড", "আইসিবি ইসলামিক ব্যাংক লিমিটেড", "আল-আরাফাহ ইসলামী ব্যাংক", 
-    "সোশ্যাল ইসলামী ব্যাংক লিমিটেড", "এক্সিম ব্যাংক লিমিটেড", "ফার্স্ট সিকিউরিটি ইসলামী ব্যাংক", 
-    "শাহজালাল ইসলামী ব্যাংক", "ইউনিয়ন ব্যাংক লিমিটেড", "স্ট্যান্ডার্ড ব্যাংক লিমিটেড", 
-    "দি সিটি ব্যাংক লিমিটেড", "ডাচ-বাংলা ব্যাংক লিমিটেড", "ন্যাশনাল ব্যাংক লিমিটেড", 
-    "পুবালী ব্যাংক লিমিটেড", "উ উত্তরা ব্যাংক লিমিটেড", "ইস্টার্ন ব্যাংক লিমিটেড", 
-    "এনসিসি ব্যাংক লিমিটেড", "মার্কেন্টাইল ব্যাংক লিমিটেড", "প্রাইম ব্যাংক লিমিটেড", 
-    "সাউথইস্ট ব্যাংক লিমিটেড", "ঢাকা ব্যাংক লিমিটেড", "মিউচুয়াল ট্রাস্ট ব্যাংক লিমিটেড", 
-    "ওয়ান ব্যাংক লিমিটেড", "ট্রাস্ট ব্যাংক লিমিটেড", "ব্যাংক এশিয়া লিমিটেড", 
-    "যমুনা ব্যাংক লিমিটেড", "প্রিমিয়ার ব্যাংক লিমিটেড", "ব্র্যাক ব্যাংক লিমিটেড", 
-    "এনআরবি কমার্শিয়াল ব্যাংক", "এনআরবি ব্যাংক লিমিটেড", "এনআরবি গ্লোবাল ব্যাংক", 
-    "মেঘনা ব্যাংক লিমিটেড", "মিডল্যান্ড ব্যাংক লিমিটেড", "সাউথ বাংলা এগ্রিকালচার অ্যান্ড কমার্স ব্যাংক", 
-    "মধুমতি ব্যাংক লিমিটেড", "পদ্মা ব্যাংক লিমিটেড", "বেঙ্গল কমার্শিয়াল ব্যাংক", 
-    "সিটিজেনস ব্যাংক পিএলসি", "কমিউনিটি ব্যাংক বাংলাদেশ লিমিটেড", "স্ট্যান্ডার্ড চার্টার্ড ব্যাংক", 
-    "স্টেট ব্যাংক অফ ইন্ডিয়া", "হাবিব ব্যাংক লিমিটেড", "ন্যাশনাল ব্যাংক অফ পাকিস্তান", 
-    "কমার্শিয়াল ব্যাংক অফ সিলন", "ব্যাংক আলফালাহ", "এইচএসবিসি", "উরি ব্যাংক", "ব্যাংক অফ চায়না"
-  ];
+  const handleAddItem = () => {
+    if (!newItem.trim()) return;
+    const value = newItem.trim();
+    if (activeTab === 'bank') setBankList([...bankList, value]);
+    else if (activeTab === 'branch') setBranchList([...branchList, value]);
+    else if (activeTab === 'district') setDistrictList([...districtList, value]);
+    else if (activeTab === 'upazila') setUpazilaList([...upazilaList, value]);
+    else if (activeTab === 'sector') setSectorList([...sectorList, value]);
+    setNewItem("");
+  };
 
-  const commonMFIs = [
-    "শিশু নিলয় ফাউন্ডেশন (এসএনএফ)",
-    "পিকেএসএফ",
-    "ব্র্যাক (BRAC)",
-    "আশা (ASA)",
-    "ব্যুরো বাংলাদেশ",
-    "টিএমএসএস",
-    "পদক্ষেপ",
-    "সাজিদ"
-  ];
-  
+  const removeItem = (item: string) => {
+    if (window.confirm(`আপনি কি "${item}" মুছতে চান?`)) {
+      if (activeTab === 'bank') setBankList(bankList.filter(i => i !== item));
+      else if (activeTab === 'branch') setBranchList(branchList.filter(i => i !== item));
+      else if (activeTab === 'district') setDistrictList(districtList.filter(i => i !== item));
+      else if (activeTab === 'upazila') setUpazilaList(upazilaList.filter(i => i !== item));
+      else if (activeTab === 'sector') setSectorList(sectorList.filter(i => i !== item));
+    }
+  };
+
+  const handleAddArea = (val: string) => {
+    if (!val) return;
+    const currentText = data.disbursementArea || "";
+    // split current string by comma and trim to get individual areas
+    const existingAreas = currentText.split(',').map(s => s.trim()).filter(s => s !== "");
+    
+    // add only if it doesn't already exist to avoid duplication
+    if (!existingAreas.includes(val)) {
+      const updatedAreas = [...existingAreas, val].join(', ');
+      onChange('disbursementArea', updatedAreas);
+    }
+  };
+
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
-      <div className="flex justify-between items-center mb-6 border-b pb-2">
-        <h2 className="text-xl font-bold text-slate-800 uppercase tracking-tight">সাধারণ তথ্য (General Information)</h2>
-        <button 
-          onClick={() => setShowSettings(!showSettings)}
-          className="flex items-center gap-2 text-xs font-bold text-emerald-600 hover:bg-emerald-50 px-3 py-1.5 rounded-lg transition-colors border border-emerald-100"
-        >
-          <Settings size={14} /> ক্লাউড সেটিংস
-        </button>
+    <div className="bg-white p-10 rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 mb-12 pdf-exclude relative transition-all">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div className="flex items-center gap-4">
+          <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg"><Building2 size={28} /></div>
+          <div>
+            <h2 className="text-2xl font-black text-slate-800 tracking-tight">রিপোর্ট কনফিগারেশন</h2>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">GENERAL SETTINGS & LISTS</p>
+          </div>
+        </div>
+        
+        {isAdmin && (
+          <button 
+            onClick={() => setShowSettings(!showSettings)}
+            className={`px-6 py-3 rounded-2xl border-2 shadow-sm transition-all flex items-center gap-2 text-[11px] font-black ${showSettings ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-white border-emerald-50 text-emerald-700 hover:bg-emerald-50'}`}
+          >
+            <Settings size={18} /> {showSettings ? 'সেটিংস বন্ধ করুন' : 'শিট ও ড্রপডাউন সেটিংস'}
+          </button>
+        )}
       </div>
 
-      {showSettings && (
-        <div className="mb-8 p-4 bg-emerald-50 rounded-xl border border-emerald-100 animate-in slide-in-from-top duration-300">
-           <div className="flex items-center gap-2 mb-3 text-emerald-800">
-             <Cloud size={18} />
-             <h3 className="font-bold text-sm">গুগল শিট কানেকশন (Google Sheets API/Web App)</h3>
-           </div>
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {isAdmin && showSettings && (
+        <div className="mb-10 p-8 bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-emerald-100 space-y-8 animate-in slide-in-from-top-4 duration-300">
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-b border-emerald-100 pb-8">
               <div>
-                <label className="block text-[10px] font-bold text-emerald-700 uppercase mb-1">গুগল অ্যাপ স্ক্রিপ্ট URL (Web App URL)</label>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Link2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-400" />
-                    <input 
-                      type="text" 
-                      placeholder="https://script.google.com/macros/s/..." 
-                      className="w-full pl-9 p-2 text-xs border border-emerald-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
-                      value={googleSheetUrl}
-                      onChange={(e) => onUrlChange(e.target.value)}
-                    />
-                  </div>
+                <label className="block text-[10px] font-black text-slate-400 uppercase mb-3 ml-1">Google Script Web App URL</label>
+                <div className="relative">
+                  <Link2 size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input 
+                    type="text" 
+                    placeholder="https://script.google.com/macros/s/..." 
+                    className="w-full pl-12 p-4 text-xs border-2 rounded-2xl outline-none transition-all bg-white shadow-sm font-bold border-slate-200 focus:border-emerald-500"
+                    value={googleSheetUrl}
+                    onChange={(e) => onUrlChange(e.target.value)}
+                  />
                 </div>
               </div>
               <div className="flex items-end">
-                <label className="flex items-center gap-3 cursor-pointer group mb-2">
-                  <input 
-                    type="checkbox" 
-                    className="w-5 h-5 accent-emerald-600 rounded cursor-pointer" 
-                    checked={autoSync} 
-                    onChange={(e) => onSyncToggle(e.target.checked)} 
-                  />
-                  <span className="text-sm font-semibold text-emerald-800">ডাটা এন্ট্রির সাথে সাথে অটো-সেভ করুন</span>
+                <label className="flex items-center gap-4 cursor-pointer p-4 bg-white rounded-2xl border-2 border-slate-100 w-full hover:border-emerald-200 transition-all shadow-sm">
+                  <input type="checkbox" checked={autoSync} onChange={(e) => onSyncToggle(e.target.checked)} className="w-6 h-6 accent-emerald-600 rounded-lg cursor-pointer" />
+                  <span className="text-sm font-black text-slate-600">অটো-সেভ (Real-time Cloud Sync)</span>
                 </label>
               </div>
            </div>
-           <p className="mt-2 text-[10px] text-emerald-600 italic">* গুগল শিট এ সেভ করার জন্য একটি Apps Script Web App প্রয়োজন।</p>
+
+           <div className="space-y-6">
+              <h3 className="text-[12px] font-black text-emerald-800 uppercase tracking-widest flex items-center gap-2">
+                <List size={18} /> ড্রপডাউন তথ্য ব্যবস্থাপনা (এডিট মোড)
+              </h3>
+              
+              <div className="flex flex-wrap gap-2">
+                {(['bank', 'branch', 'district', 'upazila', 'sector'] as const).map(tab => (
+                  <button 
+                    key={tab} 
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-700 text-white shadow-lg' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'}`}
+                  >
+                    {tab === 'bank' ? 'ব্যাংক' : tab === 'branch' ? 'শাখা' : tab === 'district' ? 'জেলা/এলাকা' : tab === 'upazila' ? 'উপজেলা' : 'ঋণের খাত'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                 <div className="flex gap-4 mb-6">
+                    <input 
+                      type="text" 
+                      placeholder={`নতুন ${activeTab === 'bank' ? 'ব্যাংক' : activeTab === 'branch' ? 'শাখা' : activeTab === 'district' ? 'জেলা' : activeTab === 'upazila' ? 'উপজেলা' : 'ঋণের খাত'} এর নাম...`} 
+                      className="flex-1 p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-emerald-500 font-bold"
+                      value={newItem}
+                      onChange={(e) => setNewItem(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
+                    />
+                    <button onClick={handleAddItem} className="bg-emerald-600 text-white px-6 rounded-xl font-black flex items-center gap-2 hover:bg-emerald-700 transition-all">
+                      <Plus size={20} /> যোগ করুন
+                    </button>
+                 </div>
+                 
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                    {(activeTab === 'bank' ? bankList : activeTab === 'branch' ? branchList : activeTab === 'district' ? districtList : activeTab === 'upazila' ? upazilaList : sectorList).map(item => (
+                      <div key={item} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 group hover:border-emerald-200 transition-all">
+                        <span className="text-xs font-bold text-slate-700 truncate mr-2" title={item}>{item}</span>
+                        <button onClick={() => removeItem(item)} className="text-rose-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all p-1">
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">ব্যাংকের নাম</label>
-          <input
-            list="bank-list"
-            className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            placeholder="ব্যাংক নির্বাচন করুন বা লিখুন"
-            value={data.bankName}
-            onChange={(e) => onChange('bankName', e.target.value)}
-          />
-          <datalist id="bank-list">
-            {commonBanks.map(bank => <option key={bank} value={bank} />)}
-          </datalist>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="space-y-3">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">ব্যাংকের নাম</label>
+          <div className="relative">
+            <select
+              disabled={!isAdmin}
+              className="w-full p-5 border-2 rounded-[1.5rem] outline-none font-black text-slate-700 shadow-sm transition-all appearance-none bg-slate-50 border-slate-50 focus:border-emerald-500"
+              value={data.bankName}
+              onChange={(e) => onChange('bankName', e.target.value)}
+            >
+              <option value="">-- ব্যাংক বাছুন --</option>
+              {bankList.map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+              <ChevronDown size={20} />
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">এমএফআই-এর নাম</label>
+
+        <div className="space-y-3">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">এমএফআই-এর নাম</label>
           <input
-            list="mfi-list"
-            className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            placeholder="উদাঃ শিশু নিলয় ফাউন্ডেশন (এসএনএফ)"
+            disabled={!isAdmin}
+            type="text"
+            className="w-full p-5 border-2 rounded-[1.5rem] outline-none font-black text-slate-700 shadow-sm bg-slate-50 border-slate-50 focus:border-emerald-500"
             value={data.mfiName}
             onChange={(e) => onChange('mfiName', e.target.value)}
           />
-          <datalist id="mfi-list">
-            {commonMFIs.map(mfi => <option key={mfi} value={mfi} />)}
-          </datalist>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">বিতরণকৃত এলাকা</label>
+
+        <div className="space-y-3">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">এলাকা/অঞ্চল (একাধিক বাছুন)</label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <select
+                disabled={!isAdmin}
+                className="w-full p-5 border-2 rounded-[1.5rem] outline-none font-black text-slate-700 shadow-sm transition-all appearance-none bg-slate-50 border-slate-50 focus:border-emerald-500 pr-10"
+                value=""
+                onChange={(e) => handleAddArea(e.target.value)}
+              >
+                <option value="">-- জেলা বাছুন --</option>
+                {districtList.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                <ChevronDown size={18} />
+              </div>
+            </div>
+            {data.disbursementArea && isAdmin && (
+              <button 
+                onClick={() => onChange('disbursementArea', '')}
+                className="p-4 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-100 transition-all border-2 border-rose-100 shadow-sm flex items-center justify-center"
+                title="মুছে ফেলুন"
+              >
+                <RotateCcw size={20} />
+              </button>
+            )}
+          </div>
           <input
+            disabled={!isAdmin}
             type="text"
-            className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            placeholder="উদাঃ শিবপুর, নরসিংদী"
+            placeholder="বাছাইকৃত জেলাগুলো এখানে কমা দিয়ে বসবে..."
+            className="w-full p-4 border-b-2 border-slate-100 outline-none text-[13px] font-black text-emerald-800 bg-transparent focus:border-emerald-300 transition-all mt-1"
             value={data.disbursementArea}
             onChange={(e) => onChange('disbursementArea', e.target.value)}
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-600 mb-1">রিপোর্টের সময়কাল</label>
+
+        <div className="space-y-3">
+          <label className="block text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">ত্রৈমাসিকের নাম</label>
           <input
+            disabled={!isAdmin}
             type="text"
-            className="w-full p-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
-            placeholder="উদাঃ জানুয়ারি-মার্চ ২০২৫"
+            className="w-full p-5 border-2 rounded-[1.5rem] outline-none font-black text-slate-700 shadow-sm bg-slate-50 border-slate-50 focus:border-emerald-500"
+            placeholder="যেমন: জানুয়ারি-মার্চ ২০২৫"
             value={data.reportPeriod}
             onChange={(e) => onChange('reportPeriod', e.target.value)}
           />

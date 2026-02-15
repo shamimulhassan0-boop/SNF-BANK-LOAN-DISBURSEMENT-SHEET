@@ -17,41 +17,44 @@
                 display: none !important;
             }
         }
-        #app-loader {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            color: #065f46;
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 10px;
         }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@1.40.0",
+    "recharts": "https://esm.sh/recharts@3.7.0",
+    "lucide-react": "https://esm.sh/lucide-react@0.463.0",
+    "jspdf": "https://esm.sh/jspdf@2.5.1",
+    "html2canvas": "https://esm.sh/html2canvas@1.4.1",
+    "xlsx": "https://esm.sh/xlsx@0.18.5",
     "react/": "https://esm.sh/react@^19.2.4/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
-    "recharts": "https://esm.sh/recharts@^3.7.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "jspdf": "https://esm.sh/jspdf@^2.5.1",
-    "html2canvas": "https://esm.sh/html2canvas@^1.4.1",
-    "xlsx": "https://esm.sh/xlsx@0.18.5"
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
   }
 }
 </script>
 </head>
 <body>
     <div id="root">
-        <div id="app-loader">
-            <div style="width: 40px; height: 40px; border: 4px solid #065f46; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="margin-top: 15px; font-weight: bold; font-family: 'Hind Siliguri', sans-serif;">পোর্টাল লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
+        <div class="min-h-screen flex flex-col items-center justify-center bg-white">
+            <div class="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+            <p class="text-emerald-800 font-bold animate-pulse">পোর্টাল লোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...</p>
         </div>
     </div>
-    <style>
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
-    <script type="module" src="./index.tsx"></script>
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
