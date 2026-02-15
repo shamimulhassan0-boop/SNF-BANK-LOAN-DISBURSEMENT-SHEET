@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { ReportHeader } from '../types';
-import { Settings, Link2, Building2, ChevronDown, Plus, Trash2, List, RotateCcw, MapPin } from 'lucide-react';
+import { ReportHeader } from '../types.ts';
+import { Settings, Link2, Building2, ChevronDown, Plus, Trash2, List, RotateCcw, MapPin, AlertCircle } from 'lucide-react';
 
 interface HeaderFormProps {
   data: ReportHeader;
@@ -30,20 +30,42 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
   const [showSettings, setShowSettings] = useState(false);
   const [newItem, setNewItem] = useState("");
   const [activeTab, setActiveTab] = useState<'bank' | 'branch' | 'district' | 'upazila' | 'sector'>('bank');
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const getCurrentList = () => {
+    switch (activeTab) {
+      case 'bank': return bankList;
+      case 'branch': return branchList;
+      case 'district': return districtList;
+      case 'upazila': return upazilaList;
+      case 'sector': return sectorList;
+      default: return [];
+    }
+  };
 
   const handleAddItem = () => {
-    if (!newItem.trim()) return;
     const value = newItem.trim();
-    if (activeTab === 'bank') setBankList([...bankList, value]);
-    else if (activeTab === 'branch') setBranchList([...branchList, value]);
-    else if (activeTab === 'district') setDistrictList([...districtList, value]);
-    else if (activeTab === 'upazila') setUpazilaList([...upazilaList, value]);
-    else if (activeTab === 'sector') setSectorList([...sectorList, value]);
+    if (!value) return;
+
+    const currentList = getCurrentList();
+    if (currentList.includes(value)) {
+      setErrorMsg("এই নামটি ইতোমধ্যেই তালিকায় রয়েছে!");
+      setTimeout(() => setErrorMsg(""), 3000);
+      return;
+    }
+
+    if (activeTab === 'bank') setBankList([...bankList, value].sort((a,b) => a.localeCompare(b, 'bn')));
+    else if (activeTab === 'branch') setBranchList([...branchList, value].sort((a,b) => a.localeCompare(b, 'bn')));
+    else if (activeTab === 'district') setDistrictList([...districtList, value].sort((a,b) => a.localeCompare(b, 'bn')));
+    else if (activeTab === 'upazila') setUpazilaList([...upazilaList, value].sort((a,b) => a.localeCompare(b, 'bn')));
+    else if (activeTab === 'sector') setSectorList([...sectorList, value].sort((a,b) => a.localeCompare(b, 'bn')));
+    
     setNewItem("");
+    setErrorMsg("");
   };
 
   const removeItem = (item: string) => {
-    if (window.confirm(`আপনি কি "${item}" মুছতে চান?`)) {
+    if (window.confirm(`আপনি কি নিশ্চিতভাবে "${item}" তালিকা থেকে মুছতে চান?`)) {
       if (activeTab === 'bank') setBankList(bankList.filter(i => i !== item));
       else if (activeTab === 'branch') setBranchList(branchList.filter(i => i !== item));
       else if (activeTab === 'district') setDistrictList(districtList.filter(i => i !== item));
@@ -55,16 +77,22 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
   const handleAddArea = (val: string) => {
     if (!val) return;
     const currentText = data.disbursementArea || "";
-    // split current string by comma and trim to get individual areas
     const existingAreas = currentText.split(',').map(s => s.trim()).filter(s => s !== "");
     
-    // add only if it doesn't already exist to avoid duplication
     if (!existingAreas.includes(val)) {
       const updatedAreas = existingAreas.length > 0 
         ? [...existingAreas, val].join(', ') 
         : val;
       onChange('disbursementArea', updatedAreas);
     }
+  };
+
+  const tabNames = {
+    bank: 'ব্যাংক',
+    branch: 'শাখা',
+    district: 'জেলা/এলাকা',
+    upazila: 'উপজেলা',
+    sector: 'ঋণের খাত'
   };
 
   return (
@@ -74,7 +102,7 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
           <div className="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg"><Building2 size={28} /></div>
           <div>
             <h2 className="text-xl md:text-2xl font-black text-slate-800 tracking-tight">রিপোর্ট কনফিগারেশন</h2>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">GENERAL SETTINGS & LISTS</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">শাখা ও ড্রপডাউন ব্যবস্থাপনা</p>
           </div>
         </div>
         
@@ -83,7 +111,8 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
             onClick={() => setShowSettings(!showSettings)}
             className={`px-6 py-3 rounded-2xl border-2 shadow-sm transition-all flex items-center gap-2 text-[11px] font-black ${showSettings ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-white border-emerald-50 text-emerald-700 hover:bg-emerald-50'}`}
           >
-            <Settings size={18} /> {showSettings ? 'সেটিংস বন্ধ করুন' : 'শিট ও ড্রপডাউন সেটিংস'}
+            <Settings size={18} className={showSettings ? 'animate-spin-slow' : ''} /> 
+            {showSettings ? 'সেটিংস বন্ধ করুন' : 'শিট ও ড্রপডাউন সেটিংস'}
           </button>
         )}
       </div>
@@ -113,46 +142,59 @@ export const HeaderForm: React.FC<HeaderFormProps> = ({
            </div>
 
            <div className="space-y-6">
-              <h3 className="text-[12px] font-black text-emerald-800 uppercase tracking-widest flex items-center gap-2">
-                <List size={18} /> ড্রপডাউন তথ্য ব্যবস্থাপনা (এডিট মোড)
-              </h3>
+              <div className="flex justify-between items-center">
+                <h3 className="text-[12px] font-black text-emerald-800 uppercase tracking-widest flex items-center gap-2">
+                  <List size={18} /> ড্রপডাউন তথ্য ব্যবস্থাপনা
+                </h3>
+              </div>
               
               <div className="flex flex-wrap gap-2">
-                {(['bank', 'branch', 'district', 'upazila', 'sector'] as const).map(tab => (
+                {(Object.keys(tabNames) as Array<keyof typeof tabNames>).map(tab => (
                   <button 
                     key={tab} 
-                    onClick={() => setActiveTab(tab)}
+                    onClick={() => { setActiveTab(tab); setErrorMsg(""); }}
                     className={`px-4 md:px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-emerald-700 text-white shadow-lg' : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-100'}`}
                   >
-                    {tab === 'bank' ? 'ব্যাংক' : tab === 'branch' ? 'শাখা' : tab === 'district' ? 'জেলা/এলাকা' : tab === 'upazila' ? 'উপজেলা' : 'ঋণের খাত'}
+                    {tabNames[tab]}
                   </button>
                 ))}
               </div>
 
-              <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                 <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                    <input 
-                      type="text" 
-                      placeholder={`নতুন ${activeTab === 'bank' ? 'ব্যাংক' : activeTab === 'branch' ? 'শাখা' : activeTab === 'district' ? 'জেলা' : activeTab === 'upazila' ? 'উপজেলা' : 'ঋণের খাত'} এর নাম...`} 
-                      className="flex-1 p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-emerald-500 font-bold"
-                      value={newItem}
-                      onChange={(e) => setNewItem(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
-                    />
-                    <button onClick={handleAddItem} className="bg-emerald-600 text-white px-6 py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all">
+              <div className="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                 <div className="flex flex-col sm:flex-row gap-4 mb-2">
+                    <div className="flex-1 relative">
+                      <input 
+                        type="text" 
+                        placeholder={`নতুন ${tabNames[activeTab]} এর নাম...`} 
+                        className={`w-full p-4 bg-slate-50 border-2 rounded-xl outline-none font-bold transition-all ${errorMsg ? 'border-rose-300 focus:border-rose-500' : 'border-slate-100 focus:border-emerald-500'}`}
+                        value={newItem}
+                        onChange={(e) => { setNewItem(e.target.value); setErrorMsg(""); }}
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddItem()}
+                      />
+                      {errorMsg && (
+                        <div className="absolute -bottom-6 left-1 text-[10px] font-bold text-rose-500 flex items-center gap-1">
+                          <AlertCircle size={12} /> {errorMsg}
+                        </div>
+                      )}
+                    </div>
+                    <button onClick={handleAddItem} className="bg-emerald-600 text-white px-8 py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-md active:scale-95">
                       <Plus size={20} /> যোগ করুন
                     </button>
                  </div>
                  
-                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                    {(activeTab === 'bank' ? bankList : activeTab === 'branch' ? branchList : activeTab === 'district' ? districtList : activeTab === 'upazila' ? upazilaList : sectorList).map(item => (
-                      <div key={item} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 group hover:border-emerald-200 transition-all">
+                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-10 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                    {getCurrentList().length > 0 ? getCurrentList().map(item => (
+                      <div key={item} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-emerald-200 transition-all hover:bg-emerald-50/30">
                         <span className="text-xs font-bold text-slate-700 truncate mr-2" title={item}>{item}</span>
-                        <button onClick={() => removeItem(item)} className="text-rose-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all p-1">
+                        <button onClick={() => removeItem(item)} className="text-rose-400 hover:text-rose-600 opacity-0 group-hover:opacity-100 transition-all p-2 bg-white rounded-lg shadow-sm border border-rose-50">
                           <Trash2 size={14} />
                         </button>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="col-span-full py-10 text-center text-slate-400 text-xs font-bold">
+                        তালিকায় কোনো তথ্য নেই।
+                      </div>
+                    )}
                  </div>
               </div>
            </div>

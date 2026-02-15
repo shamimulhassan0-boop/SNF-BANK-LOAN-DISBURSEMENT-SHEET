@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { LoanEntry } from "../types";
+import { LoanEntry } from "../types.ts";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -65,7 +65,7 @@ export const validateEntries = async (entries: LoanEntry[]) => {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview", // Using Pro for better auditing reasoning
+      model: "gemini-3-pro-preview",
       contents: validationPrompt,
       config: {
         thinkingConfig: { thinkingBudget: 4000 }

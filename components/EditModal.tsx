@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { LoanEntry } from '../types';
+import { LoanEntry } from '../types.ts';
 import { X, Save, Calculator, AlertCircle, ChevronDown, Calendar, MapPin, User, Banknote } from 'lucide-react';
 
 interface EditModalProps {
@@ -20,9 +20,7 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onSave, onClose }) 
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  // এডিট মোডে মোবাইল নম্বর ফরম্যাট করার হেল্পার
   const formatMobileInText = (text: string) => {
-    // মোবাইল নং অংশটি খুঁজে বের করা
     if (text.includes("মোবাইল নং:")) {
       const parts = text.split("মোবাইল নং:");
       const beforeMobile = parts[0];
@@ -42,7 +40,6 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onSave, onClose }) 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-in fade-in duration-200">
       <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
-        {/* Modal Header */}
         <div className="bg-emerald-800 p-6 flex justify-between items-center text-white">
           <div className="flex items-center gap-3">
             <div className="bg-white/10 p-2 rounded-lg"><Calculator size={24} /></div>
@@ -54,10 +51,7 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onSave, onClose }) 
           <button onClick={onClose} className="hover:bg-white/10 p-2 rounded-full transition-colors"><X size={24} /></button>
         </div>
         
-        {/* Modal Body */}
         <div className="p-8 overflow-y-auto space-y-8">
-          
-          {/* Section 1: Borrower & Location */}
           <div className="space-y-4">
             <h4 className="text-[11px] font-black text-emerald-700 uppercase tracking-widest flex items-center gap-2 border-b border-emerald-50 pb-2">
               <User size={14} /> সাধারণ ও এলাকা তথ্য
@@ -86,7 +80,6 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onSave, onClose }) 
             </div>
           </div>
 
-          {/* Section 2: Financial Details */}
           <div className="space-y-4">
             <h4 className="text-[11px] font-black text-emerald-700 uppercase tracking-widest flex items-center gap-2 border-b border-emerald-50 pb-2">
               <Banknote size={14} /> আর্থিক ও ঋণের তথ্য
@@ -125,7 +118,6 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onSave, onClose }) 
             </div>
           </div>
 
-          {/* Section 3: Collection & Comments */}
           <div className="space-y-4">
             <h4 className="text-[11px] font-black text-emerald-700 uppercase tracking-widest flex items-center gap-2 border-b border-emerald-50 pb-2">
               <Calendar size={14} /> আদায় ও পরিদর্শন মন্তব্য
@@ -161,7 +153,6 @@ export const EditModal: React.FC<EditModalProps> = ({ entry, onSave, onClose }) 
           )}
         </div>
         
-        {/* Modal Footer */}
         <div className="p-6 bg-slate-50 flex flex-col sm:flex-row justify-end gap-4 border-t border-slate-100">
           <button onClick={onClose} className="px-8 py-4 rounded-2xl font-black text-slate-600 hover:bg-slate-200 transition-all active:scale-95">বাতিল</button>
           <button onClick={() => onSave(formData)} className="bg-emerald-700 text-white px-10 py-4 rounded-2xl font-black text-lg hover:bg-emerald-800 transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95 shadow-emerald-200/50">

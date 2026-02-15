@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { LoanEntry } from '../types';
+import { LoanEntry } from '../types.ts';
 import { Trash2, Search, Pencil, Info } from 'lucide-react';
 
 interface ReportTableProps {

@@ -17,7 +17,6 @@
                 display: none !important;
             }
         }
-        /* Custom Scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -42,8 +41,8 @@
     "jspdf": "https://esm.sh/jspdf@2.5.1",
     "html2canvas": "https://esm.sh/html2canvas@1.4.1",
     "xlsx": "https://esm.sh/xlsx@0.18.5",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/"
   }
 }
 </script>
@@ -53,12 +52,11 @@
         <div class="min-h-screen flex flex-col items-center justify-center bg-white text-center p-6">
             <div class="w-16 h-16 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-6"></div>
             <h1 class="text-2xl font-black text-emerald-900 mb-2">পোর্টাল লোড হচ্ছে...</h1>
-            <p class="text-slate-500 font-bold max-w-xs mx-auto">অনুগ্রহ করে কয়েক সেকেন্ড অপেক্ষা করুন। যদি লোড না হয় তবে আপনার ইন্টারনেট কানেকশন চেক করুন।</p>
+            <p class="text-slate-500 font-bold max-w-xs mx-auto">অনুগ্রহ করে কয়েক সেকেন্ড অপেক্ষা করুন।</p>
             <div id="error-display" class="mt-8 text-rose-500 text-xs font-mono hidden"></div>
         </div>
     </div>
     <script type="module">
-        // Global error catcher to help debug
         window.onerror = function(msg, url, line) {
             const errDiv = document.getElementById('error-display');
             if (errDiv) {
